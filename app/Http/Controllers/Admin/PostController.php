@@ -40,14 +40,20 @@ class PostController extends Controller
 
         $data = $request->all();
         $newPost = new Post();
-        $newPost->fill($data);
+        $newPost->fill($data);        
+        
+        $slug = Str::of($data['title']);
+        $count = 1;
 
-        $newPost->slug = Str::of($data['title']); //$data as array or $request as class
+        while(Post::where('slug', $slug)->first()) {
+            $slug = Str::of($data['title']) . "-{$count}";
+            $count++;
+        }
+        $newPost->slug = $slug;
 
         $newPost->is_published = isset($data['is_published']); 
-
+        
         $newPost->save();
-
         return redirect()->route('admin.posts.show', $newPost->id);
     }
 
@@ -57,9 +63,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        return view('admin.posts.show', compact('post'));
     }
 
     /**
@@ -68,9 +74,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Post $post)
     {
-        //
+        return view('admin.posts.edit', compact('post'));
     }
 
     /**
@@ -80,9 +86,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Post $post)
     {
-        //
+
     }
 
     /**
