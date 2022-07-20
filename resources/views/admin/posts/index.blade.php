@@ -41,6 +41,11 @@
                             <td>
                               <a href="{{route('admin.posts.show', $post->id)}}" class="btn">Visualizza</a>
                               <a href="{{route('admin.posts.edit', $post->id)}}" class="btn">Modifica</a>
+                              <form action="{{route('admin.posts.destroy', $post->id)}}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn">Elimina</button>
+                              </form>
                             </td>
                           </tr>
                             @endforeach

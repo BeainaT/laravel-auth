@@ -88,7 +88,25 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
+        $data = $request->all();
+        $post->fill($data);
+        //slug method to fix
+        $slug = Str::of($data['title']);
+        $count = 1;
 
+        if ($post->title != $data['title']) {
+            while(Post::where('slug', $slug)->first()) {
+                $slug = Str::of($data['title']) . "/{$count}";
+                $count++;
+            }
+            $post->slug = $slug;
+        }
+        //---end slug method to fix
+        $post->is_published = isset($data['is_published']); 
+        
+        $post->save();
+
+        return redirect()->route('admin.posts.show', compact('post'));
     }
 
     /**
@@ -97,8 +115,10 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        return redirect()->route('admin.posts.index');
     }
+
 }
